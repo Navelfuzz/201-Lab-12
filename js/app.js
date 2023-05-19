@@ -20,12 +20,9 @@ let imgThree = document.getElementById('img-three');
 let resultBtn = document.getElementById('show-results-btn');
 let resultsList = document.getElementById('results-container');
 
-/** Create a constructor function that creates an object associated with each product with the
- * following properties:
- * 1. Name of the product
- * 2. File path of the image
- * 3. Times the image has been shown
-*/
+//canvas element
+let ctx = document.getElementById('myChart')
+
 function Product(name, imageExtension = 'jpg'){
   this.name = name;
   this.image = `img/${name}.${imageExtension}`;
@@ -67,6 +64,48 @@ function renderImgs() {
   prodArray[indices[2]].views++;
 }
 
+function renderChart() {
+  let productNames = [];
+  let productViews = [];
+  let productVotes = [];
+
+  for(let i = 0; i < prodArray.length; i++){
+    productNames.push(prodArray[i].name);
+    productViews.push(prodArray[i].views);
+    productVotes.push(prodArray[i].votes);
+  }
+
+  let chartObj = {
+    type: 'bar',
+    data: {
+      labels: productNames,
+      datasets: [{
+        label: '# of Views',
+        data: productViews, // array that will hold the views
+        borderWidth: 5,
+        backgroundColor: 'pink',
+        borderColor: 'pink'
+      },
+      {
+        label: '# of Votes',
+        data: productVotes, // array that will hold the # of votes
+        borderWidth: 5,
+        backgroundColor: 'black',
+        borderColor: 'black'
+      }
+      ]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+};
+new Chart(ctx, chartObj);
+}
+
 /**Event handler */
 function clickProduct(event){
   let imageClicked = event.target.title;
@@ -83,19 +122,12 @@ function clickProduct(event){
   }
 }
 
-function renderResults(){
-  if(votingRounds === 0){
-    for(let i = 0; i < prodArray.length; i++){
-      let prodListItem = document.createElement('li');
-
-      prodListItem.textContent = `${prodArray[i].name} - Votes: ${prodArray[i].votes} & Views: ${prodArray[i].views}`;
-
-      resultsList.appendChild(prodListItem);
-    }
-    resultBtn.removeEventListener('click', renderResults);
+function handleRenderChart(){
+  if (votingRounds === 0){
+    renderChart;
   }
+  resultBtn.removeEventListener('click', handleRenderChart);
 }
-
 
 //executable
 
@@ -112,4 +144,4 @@ for (let i = 0; i < products.length; i++) {
 renderImgs();
 
 imgContainer.addEventListener('click', clickProduct);
-resultBtn.addEventListener('click', renderResults);
+resultBtn.addEventListener('click', renderChart);
