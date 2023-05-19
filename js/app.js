@@ -33,43 +33,38 @@ function Product(name, imageExtension = 'jpg'){
   this.views = 0;
 }
 
-/**Helpers/Utils */
-function getRandomNumber() {
-  return Math.floor(Math.random() * prodArray.length);
+/** Helpers/Utils */
+function getRandomNumber(max) {
+  return Math.floor(Math.random() * max);
 }
 
+// Keep track of previously displayed image indices
+let previousIndices = [];
 
-/** Create an algorithm that will:
- *  1. Randomly display 3 of the images
- *  2. Increment its times shown property by 1
- *  3. Attach an event listener to the HTML section they are displayed
- *  4. Once the user 'clicks' a product, generate 3 new products for the user to pick
-*/
-
-//same as renderImgs
 function renderImgs() {
-  let imageOneIndex = getRandomNumber();
-  let imageTwoIndex = getRandomNumber();
-  let imageThreeIndex = getRandomNumber();
-
-  // Verify that none of the three products are the same
-  while (imageOneIndex === imageTwoIndex || imageOneIndex === imageThreeIndex || imageTwoIndex === imageThreeIndex) {
-    imageTwoIndex = getRandomNumber();
-    imageThreeIndex = getRandomNumber();
+  // Generate three unique indices
+  let indices = [];
+  while (indices.length < 3) {
+    let newIndex = getRandomNumber(prodArray.length);
+    if (!previousIndices.includes(newIndex) && !indices.includes(newIndex)) {
+      indices.push(newIndex);
+    }
   }
 
-  imgOne.src = prodArray[imageOneIndex].image;
-  imgOne.title = prodArray[imageOneIndex].name;
+  previousIndices = indices;
 
-  imgTwo.src = prodArray[imageTwoIndex].image;
-  imgTwo.title = prodArray[imageTwoIndex].name;
+  imgOne.src = prodArray[indices[0]].image;
+  imgOne.title = prodArray[indices[0]].name;
 
-  imgThree.src = prodArray[imageThreeIndex].image;
-  imgThree.title = prodArray[imageThreeIndex].name;
+  imgTwo.src = prodArray[indices[1]].image;
+  imgTwo.title = prodArray[indices[1]].name;
 
-  prodArray[imageOneIndex].views++;
-  prodArray[imageTwoIndex].views++;
-  prodArray[imageThreeIndex].views++;
+  imgThree.src = prodArray[indices[2]].image;
+  imgThree.title = prodArray[indices[2]].name;
+
+  prodArray[indices[0]].views++;
+  prodArray[indices[1]].views++;
+  prodArray[indices[2]].views++;
 }
 
 /**Event handler */
@@ -114,54 +109,7 @@ for (let i = 0; i < products.length; i++) {
   prodArray.push(product);
 }
 
-
-/*
-let bag = new Product('bag', './img/bag.jpg');
-let banana = new Product('banana', './img/banana.jpg');
-let bathroom = new Product('bathroom', './img/bathroom.jpg');
-let boots = new Product('boots', './img/boots.jpg');
-let breakfast = new Product('breakfast', './img/breakfast.jpg');
-let bubblegum = new Product('bubblegum', './img/bubblegum.jpg');
-let chair = new Product('chair', './img/chair.jpg');
-let cthulhu = new Product('cthulhu', './img/cthulhu.jpg');
-let dogDuck = new Product('dog-duck', './img/dog-duck.jpg');
-let dragon = new Product('dragon', './img/dragon.jpg');
-let pen = new Product('pen', './img/pen.jpg');
-let petSweep = new Product('pet-sweep', './img/pet-sweep.jpg');
-let scissors = new Product('scissors', './img/scissors.jpg');
-let shark = new Product('shark', './img/shark.jpg');
-let sweep = new Product('sweep', './img/sweep.png');
-let tauntaun = new Product('tauntaun', './img/tauntaun.jpg');
-let unicorn = new Product('unicorn', './img/unicorn.jpg');
-let waterCan = new Product('water-can', './img/water-can.jpg');
-let wineGlass = new Product('wine-glass', './img/wine-glass.jpg');
-
-prodArray.push(bag, banana, bathroom, boots, breakfast, bubblegum, chair, cthulhu, dogDuck, dragon, pen, petSweep,
-  scissors, shark, tauntaun, unicorn, waterCan, wineGlass);
-*/
 renderImgs();
 
 imgContainer.addEventListener('click', clickProduct);
 resultBtn.addEventListener('click', renderResults);
-/** From the users POV
- *  1. track the selections made by viewers
- *  2. In the constructor function define a property to hold the # of times a product is clicked
- *  3. After every selection by the viewer, update the newly added property to reflect the click
- */
-
-/** From the users POV
- *  1. Allow the user to control the # of rounds a user is presented with
- *  2. By default the user should be presented 25 rounds
- *  3. Keep the # of rounds in a variable to allow the number to be easily changed for debug/test
- */
-
-/** From User POV
- *  1. View of results after all rounds of voting have concluded
- *  2. create a property attached to the constructor function tracking all products currently being considered
- *  3. After voting rounds are complete, remove the event listeners on the product
- *  4. Add a button to `View Results` when clicked displays the list of all products followed by the votes received
- *      Format: banana had 3 votes, and was seen 5 times.
- *        - NOTE: Displayed product names should match the file name for the product.
- *            Example: the product represented with `dog-duck.jpg` should be displayed
- *                      to the user as exactly “dog-duck” when the results are shown.
- */
